@@ -1,0 +1,7 @@
+**/obj/*
+*.hd
+*.txt
+*.bin
+*.fd
+*.img
+nocommit/*

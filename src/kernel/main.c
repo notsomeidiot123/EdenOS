@@ -17,5 +17,7 @@ void kmain(kernel_info_t *kinfo) {
     devmgr_init();
     kprintf("Starting Service EOS.ramdisk\n");
     ramdisk_init(kinfo);
+    kprintf("Starting Service EOS.vfs\n");
+    vfs_init();
     kprintf("{DEBUG} FINISHED!\n");
 }

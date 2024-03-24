@@ -8,7 +8,8 @@ enum USTARFileTypes{
     USTAR_FTYPE_CHARDEV,
     USTAR_FTYPE_BLOCKDEV,
     USTAR_FTYPE_DIRECTORY,
-    USTAR_FTYPE_NAMED_PIPE
+    USTAR_FTYPE_NAMED_PIPE,
+    EOS_FTYPE_MOUNT,
 };
 
 typedef struct USTAR_file_s{
@@ -31,12 +32,21 @@ typedef struct USTAR_file_s{
     char data[512];
 }tmpfile_t;
 
-typedef struct dev_tree_node_s{
-    char *mount;
-    char *name;
-    uint32_t children_c;
-    struct dev_tree_node_s *children[];
-}dev_node_t;
+typedef struct file_descriptor_s{
+    char *filename;
+    uint64_t position;
+    uint64_t size;
+    uint8_t lock;
+    uint8_t permissions;
+    void *_fs_file_descriptor;/*for use by individual filesystems to store
+    information about the file itself*/
+}file_t;
+
+typedef struct filesystem_s{
+    uint64_t (*read)(char *fname, char *buffer, uint64_t size, device_t *device);
+    uint64_t (*write)(char *fname, char *buffer, uint64_t size, device_t *device);
+    device_t *device;
+}filesystem_t;
 
 uint32_t write_tmpfile(char *name, uint64_t *buffer, int type);
 void vfs_init();

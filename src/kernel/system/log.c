@@ -10,10 +10,10 @@ void log_init(uint16_t port){
     log_port = port;
 }
 
-void putc(char c){
+void kputc(char c){
     serial_write(log_port, c);
 }
-void putd(int32_t number){
+void kputd(int32_t number){
     if(number < 0){
         serial_write(log_port, '-');
         number *= -1;
@@ -28,7 +28,7 @@ void putd(int32_t number){
         serial_write(log_port, buffer[index--]);
     }
 }
-void putx(uint64_t number){
+void kputx(uint64_t number){
     char buffer[40] = {0};
     uint8_t index = 1;
     while(number > 0){
@@ -63,7 +63,7 @@ void puts(char *s){
     }
 }
 
-void printf(const char *fmt, ...){
+void kprintf(const char *fmt, ...){
     va_list args;
     va_start(args, fmt);
     int64_t arg = 0;
@@ -73,7 +73,7 @@ void printf(const char *fmt, ...){
             switch(*fmt){
                 case 'c':
                     arg = va_arg(args, int32_t);
-                    putc(arg);
+                    kputc(arg);
                     break;
                 case 's':
                     arg = (uint64_t)va_arg(args, void*);
@@ -81,15 +81,19 @@ void printf(const char *fmt, ...){
                     break;
                 case 'd':
                     arg = va_arg(args, int32_t);
-                    putd(arg);
+                    kputd(arg);
                     break;
                 case 'l':
                     arg = va_arg(args, int64_t);
-                    putd(arg);
+                    kputd(arg);
                     break;
                 case 'x':
                     arg = va_arg(args, int32_t);
-                    putx(arg);
+                    kputx(arg);
+                    break;
+                case 'h':
+                    arg = va_arg(args, int32_t);
+                    padded_putx(arg);
                     break;
                 case '0':
                     fmt++;

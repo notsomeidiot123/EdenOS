@@ -336,12 +336,12 @@ init_paging:;from this point on, no way to know what's happening... hope it goes
     mov eax, DEFAULT_PG_DIR; store ptr to page directory in eax
     mov ebx, PAGE_TABLES; first page table is 64kb after page dir
 ;     ;present, write enabled
-    mov ecx, 0x1000
+    mov ecx, 0
 .l0:
     mov dword [eax + ecx * 4], 0
-    cmp ecx, 0
+    cmp ecx, 0x400
     je id_map_mb1
-    dec ecx
+    inc ecx
     jmp .l0
     ;clear page_dir
 id_map_mb1:

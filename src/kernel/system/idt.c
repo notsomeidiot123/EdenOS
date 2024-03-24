@@ -77,16 +77,16 @@ void irq_register_callback(int32_t irq, regs_t *(*callback)(regs_t *regs)){
 }
 
 void kernel_panic(char *msg, regs_t *regs){
-    printf("Kernel Panic! %s", msg);
+    kprintf("Kernel Panic! %s", msg);
     if(!regs){
         for(;;);
     }
-    printf("[[DEBUG]]\n");
-    printf("EAX: %0x EBX: %0x ECX: %0x EDX: %0x\n", regs->eax, regs->ebx, regs->ecx, regs->edx);
-    printf("ESP: %0x EBP: %0x EDI: %0x ESI: %0x\n", regs->esp, regs->ebp, regs->edi, regs->esi);
-    printf("CS: %0x DS: %0x EFLAGS: %0x\n", regs->cs, regs->ds, regs->eflags);
-    printf("EIP: %0x CR3: %0x CR2: %0x", regs->eip, get_cr3(), get_cr2());
-    printf("Error Code: %0x\nException %0x", regs->ecode, regs->int_no);
+    kprintf("[[DEBUG]]\n");
+    kprintf("EAX: %h EBX: %h ECX: %h EDX: %h\n", regs->eax, regs->ebx, regs->ecx, regs->edx);
+    kprintf("ESP: %h EBP: %h EDI: %h ESI: %h\n", regs->esp, regs->ebp, regs->edi, regs->esi);
+    kprintf("CS: %h DS: %h EFLAGS: %h\n", regs->cs, regs->ds, regs->eflags);
+    kprintf("EIP: %h CR3: %h CR2: %h", regs->eip, get_cr3(), get_cr2());
+    kprintf("Error Code: %h\nException %h", regs->ecode, regs->int_no);
     for(;;);
 }
 
@@ -104,7 +104,7 @@ void _irq_handler(regs_t *regs){
 
 void _isr_handler(regs_t *regs){
     if(regs->int_no == 8 || regs->int_no == 18){
-        printf("Fatal Error: Aborting\n");
+        kprintf("Fatal Error: Aborting\n");
         for(;;);
     }
     //TODO: REPLACE MAGIC VALUE WITH MACRO FROM GDT
@@ -122,7 +122,7 @@ void idt_set_gate(int index, void (*offset), enum IDTFlags flags){
 }
 
 void idt_init(){
-    printf("\tException Handlers: ");
+    kprintf("\tException Handlers: ");
     
     // idt_set_gate(i, _isr0 + ((_isr1 - _isr0) * i), IDT_INT_KERNEL);
     idt_set_gate(0, _isr0, IDT_INT_KERNEL);
@@ -158,11 +158,11 @@ void idt_init(){
     idt_set_gate(30, _isr30, IDT_INT_KERNEL);
     idt_set_gate(31, _isr31, IDT_INT_KERNEL);
     
-    printf("SET\n\tIDT Address: %0x\n\tIDT Descriptor: %0x\n\tPeripheral Interrupts: ", &idt, &idt_desc);
+    kprintf("SET\n\tIDT Address: %0x\n\tIDT Descriptor: %0x\n\tPeripheral Interrupts: ", &idt, &idt_desc);
     for(int i = 0; i < 16; i++){
         idt_set_gate(i + 32, (void *)(_irq0 + (_irq1 - _irq0) * i), IDT_INT_KERNEL);
     }
-    printf("SET\nInitializing PIC:\n");
+    kprintf("SET\nInitializing PIC:\n");
     
     idt_desc.size = sizeof(idt_entry_t) * 256-1;
     idt_desc.offset = (idt_entry_t **)&idt;
@@ -176,10 +176,10 @@ void idt_init(){
     outb(PIC_MASTER_DATA, 1);
     outb(PIC_SLAVE_DATA, 1);
 
-    printf("\tRemapped PICs\nLoading IDT\n");
+    kprintf("\tRemapped PICs\nLoading IDT\n");
     load_idt(&idt_desc);
-    printf("Enabling Interrupts\n");
-    printf("Remasking PICs\n");
+    kprintf("Enabling Interrupts\n");
+    kprintf("Remasking PICs\n");
     outb(PIC_MASTER_DATA, 0);
     outb(PIC_SLAVE_DATA, 0);
     outb(PIC_MASTER_COMMAND, PIC_EOI);

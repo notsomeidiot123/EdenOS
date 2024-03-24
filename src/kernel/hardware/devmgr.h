@@ -21,12 +21,12 @@ typedef struct device_s{
     enum DeviceType type;
     uint64_t devid;
     uint32_t subtype;
-    uint64_t (*write)(uint32_t *buffer, uint64_t size, uint64_t count, uint64_t start);
-    uint64_t (*read)(uint32_t *buffer, uint64_t size, uint64_t count, uint64_t start);
+    uint64_t (*write)(uint64_t *buffer, uint64_t count, uint64_t cmd, uint64_t start);
+    uint64_t (*read)(uint64_t *buffer, uint64_t count, uint64_t cmd, uint64_t start);
 }device_t;
 
 
-uint64_t register_device(enum DeviceType type, int sub_type, uint64_t (*read)(uint32_t *buffer, uint64_t size, uint64_t count, uint64_t start), uint64_t (*write)(uint32_t *buffer, uint64_t size, uint64_t count, uint64_t start));
+uint64_t register_device(enum DeviceType type, int sub_type, uint64_t (*read)(uint64_t *buffer, uint64_t count, uint64_t cmd, uint64_t start), uint64_t (*write)(uint64_t *buffer, uint64_t count, uint64_t cmd, uint64_t start));
 void deregister_device(uint64_t devid);
 uint32_t get_device_by_type(enum DeviceType type, device_t **buffer);
 void devmgr_init();

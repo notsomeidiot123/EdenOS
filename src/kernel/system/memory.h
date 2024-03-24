@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 enum MMAP_TYPES{
@@ -94,5 +95,6 @@ uint64_t get_cr3();
 void set_cr3(uint32_t pd_addr);
 uint64_t get_cr2();
 
-void *valloc(uint32_t size, uint32_t attributes);
+void *valloc(uint64_t size, uint32_t attributes);
+void *valloc_pages(uint64_t size, uint32_t attributes);
 void vfree(void *vaddr);

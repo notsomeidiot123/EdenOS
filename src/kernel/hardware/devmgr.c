@@ -15,7 +15,7 @@ uint64_t devmgr_gendevid(){
     return next_devid;
 }
 
-uint64_t register_device(enum DeviceType type, int sub_type, uint64_t (*read)(uint32_t *buffer, uint64_t size, uint64_t count, uint64_t start), uint64_t (*write)(uint32_t *buffer, uint64_t size, uint64_t count, uint64_t start)){
+uint64_t register_device(enum DeviceType type, int sub_type, uint64_t (*read)(uint64_t *buffer, uint64_t count, uint64_t cmd, uint64_t start), uint64_t (*write)(uint64_t *buffer, uint64_t count, uint64_t cmd, uint64_t start)){
     device_t **devlist = devices;
     int i = 0;
     for(; i < MAX_DEVICES; i++){
@@ -52,7 +52,7 @@ void deregister_device(uint64_t devid){
 }
 
 void devmgr_init(){
-    printf("\tAllocating space for device_list\n");
+    kprintf("\tAllocating space for device_list\n");
     devices = valloc(sizeof(device_t *) * MAX_DEVICES, PG_ATTR_GLOBAL);
     if(devices == 0){
         PANIC("Could not initialize device manager!\n");
